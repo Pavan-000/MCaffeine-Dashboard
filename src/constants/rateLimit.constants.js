@@ -1,0 +1,8 @@
+const RATE_LIMIT_WINDOW_MS = 2000; // 2 seconds
+
+const RATE_LIMIT_MAX_REQUESTS = 1;
+
+module.exports = {
+  RATE_LIMIT_WINDOW_MS,
+  RATE_LIMIT_MAX_REQUESTS
+};

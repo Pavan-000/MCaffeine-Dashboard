@@ -3,9 +3,11 @@ const router =
 
 const controller =
   require("../controllers/dashboard.controller");
+const rateLimiter = require("../utils/rateLimiter");
 
 router.get(
   "/",
+  rateLimiter,
   controller.getDashboard
 );
 
