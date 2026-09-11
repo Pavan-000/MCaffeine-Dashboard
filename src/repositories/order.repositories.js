@@ -13,16 +13,27 @@ class OrderRepository {
     return data;
   }
 
-  async getOrders() {
-    const { data, error } =
-      await supabase
-        .from("orders")
-        .select("*");
+  async getOrders(startDate, endDate) {
 
-    if (error) throw error;
+  let query = supabase
+    .from("orders")
+    .select("*");
 
-    return data;
+  if (startDate && endDate) {
+
+    query = query
+      .gte("order_date", startDate)
+      .lte("order_date", `${endDate}T23:59:59`);
+
   }
+
+  const { data, error } =
+    await query;
+
+  if (error) throw error;
+
+  return data;
+}
 }
 
 module.exports = new OrderRepository();

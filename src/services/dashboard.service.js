@@ -1,69 +1,45 @@
-const repository =
-  require("../repositories/order.repositories");
+const dashboardRepository = require("../repositories/order.repositories");
 
-class DashboardService {
+const getDashboard = async ({ startDate, endDate }) => {
+  const orders = await dashboardRepository.getOrders(
+    startDate,
+    endDate
+  );
 
-  async getDashboard() {
+  const totalSales = orders.reduce(
+    (sum, order) => sum + Number(order.amount),
+    0
+  );
 
-    const orders =
-      await repository.getOrders();
+  const totalOrders = orders.length;
 
-    const totalSales =
-      orders.reduce(
-        (sum, o) =>
-          sum + Number(o.amount),
-        0
-      );
+  const salesByPlatform = {};
+  const salesByCategory = {};
+  const topProducts = {};
 
-    const totalOrders =
-      orders.length;
+  orders.forEach((order) => {
+    salesByPlatform[order.platform] =
+      (salesByPlatform[order.platform] || 0) +
+      Number(order.amount);
 
-    const salesByPlatform = {};
+    salesByCategory[order.category] =
+      (salesByCategory[order.category] || 0) +
+      Number(order.amount);
 
-    const salesByCategory = {};
+    topProducts[order.product_name] =
+      (topProducts[order.product_name] || 0) +
+      Number(order.amount);
+  });
 
-    const topProducts = {};
+  return {
+    totalSales,
+    totalOrders,
+    salesByPlatform,
+    salesByCategory,
+    topProducts,
+  };
+};
 
-    orders.forEach(order => {
-
-      salesByPlatform[
-        order.platform
-      ] =
-        (salesByPlatform[
-          order.platform
-        ] || 0)
-        + Number(order.amount);
-
-      salesByCategory[
-        order.category
-      ] =
-        (salesByCategory[
-          order.category
-        ] || 0)
-        + Number(order.amount);
-
-      topProducts[
-        order.product_name
-      ] =
-        (topProducts[
-          order.product_name
-        ] || 0)
-        + Number(order.amount);
-    });
-
-    return {
-      totalSales,
-
-      totalOrders,
-
-      salesByPlatform,
-
-      salesByCategory,
-
-      topProducts
-    };
-  }
-}
-
-module.exports =
-  new DashboardService();
+module.exports = {
+  getDashboard,
+};
